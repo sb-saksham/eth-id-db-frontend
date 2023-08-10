@@ -1,0 +1,13 @@
+user -> ethereum address
+        name 
+        date of birth
+
+wallet address -> Ethereum smart contract  -> verified or not verified or under process or failed
+                                              if verified name, dob   
+
+database verify -> Id photo             -> face, name, dob
+                   photo of person      -> face, wallet address
+                   with wallet address
+
+if all match then send signal to smart contract to set verified 
+email 
