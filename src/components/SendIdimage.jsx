@@ -66,7 +66,7 @@ const SendIdImage = () => {
                     <>
                         <Button variant="primary" onClick={retake}>Retake photo</Button>
                         {'      '}
-                        <Button variant="success" onClick={submitPicture}>Submit Photo</Button>
+                        <Button variant="success" onClick={submitPicture} disabled={loading}>Submit Photo</Button>
                     </>
                 ) : (
                     <Button variant="primary" onClick={capture}>Capture photo</Button>

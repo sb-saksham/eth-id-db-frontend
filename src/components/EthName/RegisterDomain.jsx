@@ -32,7 +32,6 @@ const getPrice = (lengt) => {
 
 const RegisterDomain = () => {
     const navigate = useNavigate();
-    const { address: walletAddress } = useAccount();
     const { saveEthName } = useEthNameContext();
     const [domainName, setDomainName] = useState("");
     const [priceOfDomain, setPriceOfDomain] = useState(0);
@@ -41,7 +40,7 @@ const RegisterDomain = () => {
     const debouncedDomainName = useDebounce(domainName, 500);
     const debouncedDomainPrice = useDebounce(priceOfDomain, 500);
 
-    const { data: transactionData, isSuccess: transactionIsSuccess, isLoading: transactionIsLoading } = useWaitForTransaction({ hash: transactionHash });
+    const {data: transactionData, isError: transactionFetchError, isLoading: transactionFetchIsLoading} = useWaitForTransaction({ hash: transactionHash });
     const { config: registerDomainConfig, error: registerPrepareEr } = usePrepareContractWrite({
         ...ContractDetails,
         functionName: "registerDomain",
@@ -55,6 +54,13 @@ const RegisterDomain = () => {
         writeAsync: registerWrite,
         isSuccess: registerIsSuccess,
     } = useContractWrite(registerDomainConfig);
+    useEffect(() => {
+        if (registerIsSuccess) {
+            saveEthName(debouncedDomainName);
+            navigate("/verify/wallet")
+            toast.success(`Transaction successful check at <a href='https://sepolia.etherscan.io/tx/${registerData.hash}'>Etherscan</a>`);                                
+        }
+    }, [registerIsSuccess])
     return (
         <Row className="text-center">
             <Col sm="12">
@@ -91,18 +97,11 @@ const RegisterDomain = () => {
                         try {
                             const txHash = await registerWrite?.();
                             setTransactionHash(txHash.hash);
-                            if (registerIsSuccess) {
-                                saveEthName(debouncedDomainName);
-                                navigate("/verify/wallet")
-                                toast.success(`Transaction successful check at <a href='https://sepolia.etherscan.io/tx/${txHash.hash}'>Etherscan</a>`);                                
-                            } else {
-                                console.log(registerError);
-                            }
                         } catch (error) {
                             setDomainName(debouncedDomainName);
                         }
                     }}
-                    disabled={!registerWrite || registerIsLoading || registerError || transactionIsLoading}>Register</Button>
+                        disabled={!registerWrite || registerIsLoading || registerError || transactionFetchIsLoading}>{transactionFetchIsLoading?"Verifying...":"Register"}</Button>
                 </Form>
             </Col>
         </Row>
