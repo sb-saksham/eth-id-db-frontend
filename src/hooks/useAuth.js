@@ -30,7 +30,6 @@ const useAuth = () => {
           ...authresult.data?.user  
         }
         setUser(userObj);
-        console.log("")
         navigate('/auth/');
       } catch (err) {
         console.error(err);

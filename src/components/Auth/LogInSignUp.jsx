@@ -11,17 +11,18 @@ import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import CenteredButton from "../UI/CenteredButton";
 import { useAuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const LogInSignUp = () => {
+const LogInSignUp = ({}) => {
     const {address: walletAddress} = useAccount();
     const [form, setForm] = useState("login");
     const navigate = useNavigate();
+    const location = useLocation();
     const {user} = useAuthContext();
     const changeActiveForm = (formName) => setForm(formName);
     useEffect(() => {
         if (walletAddress !== undefined && user && user.token) {
-            navigate('/')
+            navigate(location.state.from || '/');
         }
      }, [walletAddress, user])
     return (

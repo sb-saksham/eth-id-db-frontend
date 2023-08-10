@@ -6,12 +6,14 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { useAuthContext } from "../context/AuthContext";
+import { useEthNameContext } from "../context/EthNameContext";
 
 
 const SendIdImage = () => {
     const { user } = useAuthContext();
     const webcamRef = useRef(null);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [imgSrc, setImgSrc] = useState(null);
     const [localIdImg, setLocalIdImg] = useLocalStorage("id_image", null);
     // create a capture function
@@ -22,8 +24,10 @@ const SendIdImage = () => {
     const retake = () => {
         setImgSrc(null);
     };
+    const { ethName } = useEthNameContext();
+    console.log("VerifyId", ethName);
     const submitPicture = async () => {
-        console.log(user.token)
+        setLoading(true);
         try {
             const res = await axios.post("http://127.0.0.1:8000/accounts/id/img/", {
                 "id_image": imgSrc
@@ -41,6 +45,7 @@ const SendIdImage = () => {
             retake();
             return er;
         }
+        setLoading(false);
     }
     return (
         <div className="container text-center">
@@ -52,7 +57,9 @@ const SendIdImage = () => {
             {imgSrc ? (
                 <img src={imgSrc} alt="webcam" />
             ) : (
-                <Webcam height={600} width={600} ref={webcamRef} />
+                <Webcam height={600} width={600} ref={webcamRef} onUserMediaError={(e) => {
+                        toast.error("Please reload the page to allow the website to access the camera.")
+                }} />
             )}
             <div className="btn-container my-5 text-center">
                 {imgSrc ? (

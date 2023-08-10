@@ -10,6 +10,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/esm/Button";
 import IdDb from "../../artifacts/contracts/idDb.sol/IdDb.json";
 import useDebounce from '../../hooks/UseDebounce';
+import { useEthNameContext } from "../../context/EthNameContext";
 
 const ContractDetails = {
     address: "0xB433adA68B8A8EE6B18753Fe4D98Bd1C7017C589",
@@ -32,7 +33,7 @@ const getPrice = (lengt) => {
 const RegisterDomain = () => {
     const navigate = useNavigate();
     const { address: walletAddress } = useAccount();
-
+    const { saveEthName } = useEthNameContext();
     const [domainName, setDomainName] = useState("");
     const [priceOfDomain, setPriceOfDomain] = useState(0);
     const [transactionHash, setTransactionHash] = useState("");
@@ -54,27 +55,14 @@ const RegisterDomain = () => {
         writeAsync: registerWrite,
         isSuccess: registerIsSuccess,
     } = useContractWrite(registerDomainConfig);
-
-    const { data: domainOfUr, error: domainFetchError} = useContractRead({
-        ...ContractDetails,
-        functionName: "domainOf",
-        args: [walletAddress],
-    });
-    useEffect(() => {
-        if (domainOfUr) {
-            setDomainOfUser(domainOfUr);
-        }
-     }, [domainOfUr]);
-    console.log("register error", registerPrepareEr);
-    console.log("regWrite", !registerWrite)
-    console.log("regload", registerIsLoading)
-    console.log("regError", registerError);
-    console.log("trLoad", transactionIsLoading)
     return (
         <Row className="text-center">
             <Col sm="12">
                 <h4>If you already have a registered domain name asscociated with
                     your account please enter it or register a new domain on our contract below.</h4>
+            </Col>
+            <Col sm="12" className="m-3">
+                <Button lg variant="primary" onClick={()=>{navigate('/verify/get/')}}>Fetch Domain Instead</Button>
             </Col>
             <Col sm="12">
                 <h4>Current price: <strong>{debouncedDomainPrice}</strong></h4>
@@ -102,20 +90,16 @@ const RegisterDomain = () => {
                     <Button onClick={async () => {
                         try {
                             const txHash = await registerWrite?.();
-                            setTransactionHash(txHash);
-                            if (registerIsSuccess && transactionIsSuccess) {
+                            setTransactionHash(txHash.hash);
+                            if (registerIsSuccess) {
+                                saveEthName(debouncedDomainName);
                                 navigate("/verify/wallet")
-                                toast.success(`Transaction successful check at <a href='https://sepolia.etherscan.io/tx/${txHash}'>Etherscan</a>`);
+                                toast.success(`Transaction successful check at <a href='https://sepolia.etherscan.io/tx/${txHash.hash}'>Etherscan</a>`);                                
                             } else {
                                 console.log(registerError);
                             }
                         } catch (error) {
-                            console.error("From here", error);
                             setDomainName(debouncedDomainName);
-                            console.log("regWrite", !registerWrite)
-                            console.log("regload", registerIsLoading)
-                            console.log("regError", registerError);
-                            console.log("trLoad", transactionIsLoading)
                         }
                     }}
                     disabled={!registerWrite || registerIsLoading || registerError || transactionIsLoading}>Register</Button>

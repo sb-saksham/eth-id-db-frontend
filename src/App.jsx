@@ -12,14 +12,15 @@ import SendWAddrImage from './components/SendWAddrImage';
 import LogInSignUp from "./components/Auth/LogInSignUp";
 import RequireAuth from './hoc/RequireAuth.jsx';
 import { AuthProvider } from "./context/AuthContext";
+import { EthNameProvider } from "./context/EthNameContext";
 import SaveToDb from "./components/SaveToDb";
 import RegisterDomain from "./components/EthName/RegisterDomain";
 import GetDomain from "./components/EthName/GetDomain";
 import VerifyUserEmail from "./components/Auth/VerifyUserEmail";
 import Error404Page from "./components/UI/Error404Page";
 import HomePage from "./components/UI/Homepage";
-import BaseTemplate from "./components/UI/BaseTemplate";
-import { EthNameProvider } from "./context/EthNameContext";
+import Dashboard from "./components/UI/Dashboard";
+import StartRegistration from "./components/StartRegistration";
 
 function App() {
   return (
@@ -27,8 +28,8 @@ function App() {
       <AuthProvider>
         <EthNameProvider>
         <Routes>
-          <Route path="/" element={<BaseTemplate/>} errorElement={<Error404Page/>}>
-            <Route path="" element={<RequireAuth authLink={"/auth"}><HomePage /></RequireAuth>} />
+          <Route path="/" element={<Dashboard/>} errorElement={<Error404Page/>}>
+            <Route path="" element={<HomePage />} />
             <Route path="verify/">
               <Route path="register/" element={<RequireAuth authLink={"/auth"}><RegisterDomain /></RequireAuth>} />
               <Route path="get/" element={<RequireAuth authLink={"/auth"}><GetDomain/></RequireAuth>}/>
@@ -36,7 +37,8 @@ function App() {
               <Route path="wallet/" element={<RequireAuth authLink={"/auth"}><SendWAddrImage /></RequireAuth>} />
             </Route>
             <Route path="save/id/" element={<RequireAuth authLink={'/auth'}><SaveToDb /></RequireAuth>}/>
-            <Route path='auth/' element={<LogInSignUp />}/>
+            <Route path='auth/' element={<LogInSignUp />} />
+            <Route path="start/registration/" element={<RequireAuth authLink="/auth"><StartRegistration/></RequireAuth>}/>
             <Route path='activate/email/:verifyKey' element={<VerifyUserEmail />}/>
           </Route>
           </Routes>

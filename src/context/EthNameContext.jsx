@@ -1,12 +1,16 @@
-import React, { createContext, useContext } from "react";
+import React, { useContext, createContext } from "react";
 import useEthName from "../hooks/useEthName";
-
 
 const EthNameContext = createContext();
 const useEthNameContext = () => useContext(EthNameContext);
-const EthNameProvider = ({ children }) => {
-    const ethNameCon = useEthName()
-    return <EthNameContext.Provider value={ethNameCon}>{children}</EthNameContext.Provider>;
+
+const EthNameProvider = ({children}) => {
+    const ethCont = useEthName();
+    return (
+        <EthNameContext.Provider value={ethCont}>
+            {children}
+        </EthNameContext.Provider>
+    );
 }
 
-export {EthNameProvider, useEthNameContext}
+export { useEthNameContext, EthNameProvider };

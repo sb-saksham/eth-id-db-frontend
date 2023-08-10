@@ -18,4 +18,5 @@ const AuthProvider = ({children}) => {
 }
 
 export { useAuthContext, AuthProvider };
-// useAuthContext for coponents inside the AuthProvider to use the value for
+// useAuthContext for coponents inside the 
+// AuthProvider to use the value for
